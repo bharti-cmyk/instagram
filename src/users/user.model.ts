@@ -7,7 +7,7 @@ import {
   AllowNull,
 } from 'sequelize-typescript';
 import { Post } from '../posts/post.model';
-import { Follow } from 'src/follows/follow.model';
+import { Follow } from '../follows/follow.model';
 
 @Table({
   tableName: 'users',
@@ -42,25 +42,26 @@ export class User extends Model<User> {
   declare email: string;
 
   @Column({
+    type: DataType.STRING,
     allowNull: false,
   })
-  password: string;
+  declare password: string;
 
   @Column({
     type: DataType.TEXT,
   })
-  bio: string;
+  declare bio: string;
 
   @Column({
     type: DataType.TEXT,
   })
-  avatarUrl: string;
+  declare avatarUrl: string;
 
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: false,
   })
-  isCelebrity: boolean;
+  declare isCelebrity: boolean;
 
   @Column({
     type: DataType.BIGINT,
@@ -68,6 +69,12 @@ export class User extends Model<User> {
     comment: 'Post ID of the last seen post for this user',
   })
   lastSeenPostId: string | null;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  declare fcmToken: string | null;
 
   @HasMany(() => Post)
   posts: Post[];

@@ -8,6 +8,11 @@ import { FeedModule } from './feed/feed.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis.module';
+import { NotificationModule } from './notification/notification.module';
+import { CommentsModule } from './comments/comments.module';
+import { LikesModule } from './likes/likes.module';
 
 @Module({
   imports: [
@@ -25,6 +30,11 @@ import { ThrottlerModule } from '@nestjs/throttler';
     FollowModule,
     PostModule,
     FeedModule,
+    AuthModule,
+    RedisModule,
+    NotificationModule,
+    CommentsModule,
+    LikesModule
   ],
   controllers: [AppController],
   providers: [AppService],

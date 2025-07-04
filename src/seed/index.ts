@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { seedUsers } from './user.seed';
-import { seedFollows } from './follow.seed';
-import { seedPosts } from './post.seed';
+// import { seedFollows } from './follow.seed';
+// import { seedPosts } from './post.seed';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
 
@@ -12,8 +12,8 @@ const runSeeders = async () => {
   await sequelize.sync({ force: false });
 
   await seedUsers();
-  await seedFollows();
-  await seedPosts();
+  // await seedFollows();
+  // await seedPosts();
 
   console.log('✅ All seeders completed successfully');
 

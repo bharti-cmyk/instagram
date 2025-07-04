@@ -5,6 +5,9 @@ import { Sequelize } from 'sequelize-typescript'; // ✅ Use this
 import { User } from '../users/user.model';
 import { Post } from '../posts/post.model';
 import { Follow } from '../follows/follow.model';
+import { Like } from '../likes/like.model';
+import { Comment } from '../comments/comment.model';
+import { Notification } from '../notification/notification.model';
 
 @Module({
   imports: [
@@ -19,7 +22,7 @@ import { Follow } from '../follows/follow.model';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        models: [User, Post, Follow],
+        models: [User, Post, Follow, Like, Comment, Notification],
         autoLoadModels: true,
         synchronize: true,
         logging: false,
