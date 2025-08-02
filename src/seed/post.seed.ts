@@ -12,7 +12,7 @@ export const seedPosts = async () => {
       });
     }
   }
-
   await Post.bulkCreate(posts);
-  console.log('✅ Seeded Posts');
+  console.log(' Seeded Posts');
 };
+

@@ -43,15 +43,15 @@ async function bootstrap() {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   
   const server = await app.listen(port);
-  console.log(`🚀 Server is running on http://localhost:${port}`);
+  console.log(` Server is running on http://localhost:${port}`);
 
   // Graceful shutdown handling
   const gracefulShutdown = async (signal: string) => {
-    console.log(`\n🛑 Received ${signal}. Starting graceful shutdown...`);
+    console.log(` Received ${signal}. Starting graceful shutdown...`);
     
     // Set a timeout to force shutdown if graceful shutdown takes too long
     const forceShutdownTimeout = setTimeout(() => {
-      console.error('⚠️  Force shutdown after timeout');
+      console.error(' Force shutdown after timeout');
       process.exit(1);
     }, 30000); // 30 seconds timeout
 
@@ -60,24 +60,24 @@ async function bootstrap() {
       const sequelize = app.get(Sequelize);
       const redisClient = app.get('REDIS_CLIENT') as Redis;
 
-      console.log('📦 Closing database connections...');
+      console.log('Closing database connections...');
       await sequelize.close();
-      console.log('✅ Database connections closed');
+      console.log('Database connections closed');
 
-      console.log('📦 Closing Redis connections...');
+      console.log('Closing Redis connections...');
       await redisClient.quit();
-      console.log('✅ Redis connections closed');
+      console.log('Redis connections closed');
 
       // Close the HTTP server
-      console.log('📦 Closing HTTP server...');
+      console.log('Closing HTTP server...');
       await server.close();
-      console.log('✅ HTTP server closed');
+      console.log(' HTTP server closed');
 
       clearTimeout(forceShutdownTimeout);
-      console.log('🎉 Graceful shutdown completed successfully');
+      console.log(' Graceful shutdown completed successfully');
       process.exit(0);
     } catch (error) {
-      console.error('❌ Error during graceful shutdown:', error);
+      console.error('Error during graceful shutdown:', error);
       clearTimeout(forceShutdownTimeout);
       process.exit(1);
     }
@@ -89,13 +89,13 @@ async function bootstrap() {
   
   // Handle uncaught exceptions
   process.on('uncaughtException', (error) => {
-    console.error('💥 Uncaught Exception:', error);
+    console.error('Uncaught Exception:', error);
     gracefulShutdown('uncaughtException');
   });
 
   // Handle unhandled promise rejections
   process.on('unhandledRejection', (reason, promise) => {
-    console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+    console.error(' Unhandled Rejection at:', promise, 'reason:', reason);
     gracefulShutdown('unhandledRejection');
   });
 }

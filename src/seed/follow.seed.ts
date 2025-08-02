@@ -8,7 +8,7 @@ export const seedFollows = async () => {
       follows.push({ followerId, followedId }); // everyone follows all celebs
     }
   }
-
   await Follow.bulkCreate(follows);
-  console.log('✅ Seeded Follows');
+  console.log(' Seeded Follows');
 };
+

@@ -29,19 +29,19 @@ const sequelize = new Sequelize({
 const init = async () => {
   try {
     await sequelize.authenticate();
-    console.log("✅ Sequelize connected in worker");
+    console.log("Sequelize connected in worker");
 
     new Worker(
       "feed-fanout",
       async (job) => {
         const { userId, postId } = job.data;
 
-        console.log(`📨 Received job for postId ${postId} by user ${userId}`);
+        console.log(`Received job for postId ${postId} by user ${userId}`);
 
         const user = await User.findByPk(userId);
 
         if (!user) {
-          console.log(`❌ User ${userId} not found`);
+          console.log(` User ${userId} not found`);
           return;
         }
 
@@ -58,11 +58,11 @@ const init = async () => {
         });
 
         if (!followers || followers.length === 0) {
-          console.log(`⚠️ No followers found for user ${userId}. Skipping fanout.`);
+          console.log(`No followers found for user ${userId}. Skipping fanout.`);
           return;
         }
 
-        console.log(`✅ Found ${followers.length} followers for user ${userId}`);
+        console.log(`Found ${followers.length} followers for user ${userId}`);
 
         const pipelines = redis.pipeline();
 
@@ -86,7 +86,7 @@ const init = async () => {
       }
     );
   } catch (err) {
-    console.error("❌ Sequelize connection failed in worker:", err);
+    console.error("Sequelize connection failed in worker:", err);
     process.exit(1);
   }
 };

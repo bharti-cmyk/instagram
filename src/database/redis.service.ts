@@ -7,13 +7,13 @@ export class RedisService implements OnModuleDestroy {
 
   async onModuleDestroy() {
     try {
-      console.log('🔄 Closing Redis connections...');
+      console.log(' Closing Redis connections...');
       if (this.redisClient && typeof this.redisClient.quit === 'function') {
         await this.redisClient.quit();
-        console.log('✅ Redis connections closed successfully.');
+        console.log(' Redis connections closed successfully.');
       }
     } catch (error) {
-      console.error('❌ Error closing Redis connections:', error.message);
+      console.error('Error closing Redis connections:', error.message);
     }
   }
 } 

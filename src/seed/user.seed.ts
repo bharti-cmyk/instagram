@@ -15,7 +15,7 @@ export const seedUsers = async () => {
       isCelebrity: i <= 5, // first 5 are celebs
     });
   }
-
   await User.bulkCreate(users);
-  console.log('✅ Seeded Users');
+  console.log('Seeded Users');
 };
+

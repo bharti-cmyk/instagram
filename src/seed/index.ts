@@ -15,7 +15,7 @@ const runSeeders = async () => {
   // await seedFollows();
   // await seedPosts();
 
-  console.log('✅ All seeders completed successfully');
+  console.log('All seeders completed successfully');
 
   process.exit(0);
 };

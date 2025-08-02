@@ -7,8 +7,8 @@ export class NotificationListener implements OnModuleInit {
 
   async onModuleInit() {
     await this.redisSub.subscribe('notification:follow', 'notification:like',
-      'notification:comment'); // ✅ Ensure subscription completes
-    console.log('🔔 Subscribed to follow, like, and comment notification channels');
+      'notification:comment'); // Ensure subscription completes
+    console.log('Subscribed to follow, like, and comment notification channels');
 
     this.redisSub.on('message', (channel, message) => {
       try {
@@ -16,22 +16,22 @@ export class NotificationListener implements OnModuleInit {
 
         switch (channel) {
           case 'notification:follow':
-            console.log(`[Redis PubSub] 🔔 Follow event:`, payload);
+            console.log(`[Redis PubSub] Follow event:`, payload);
             break;
           case 'notification:like':
-            console.log(`[Redis PubSub] ❤️ Like event:`, payload);
+            console.log(`[Redis PubSub] Like event:`, payload);
             break;
           case 'notification:comment':
-            console.log(`[Redis PubSub] 💬 Comment event:`, payload);
+            console.log(`[Redis PubSub] Comment event:`, payload);
             break;
           default:
-            console.warn(`⚠️ Unknown channel received: ${channel}`);
+            console.warn(`Unknown channel received: ${channel}`);
         }
 
         // Later: You can broadcast to WebSocket clients here
 
       } catch (err) {
-        console.error('❌ Failed to parse message:', message);
+        console.error('Failed to parse message:', message);
       }
     });
   }

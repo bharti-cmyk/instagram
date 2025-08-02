@@ -47,7 +47,7 @@ const worker = new Worker(
     async (job) => {
         const { fromUserId, toUserId, fcmToken, type, timestamp, postId, text } = job.data;
 
-        console.log(`🔔 [Worker] Handling notification for type [${type}]:`, job.data);
+        console.log(` [Worker] Handling notification for type [${type}]:`, job.data);
 
         // Send Email
         const subjectMap = {
@@ -69,7 +69,7 @@ const worker = new Worker(
             html: htmlMap[type],
         });
 
-        console.log("📧 Email sent");
+        console.log(" Email sent");
 
         // Push Notification
         if (fcmToken) {
@@ -90,9 +90,9 @@ const worker = new Worker(
                 body: bodyMap[type],
             });
 
-            console.log('📲 Push sent:', result);
+            console.log(' Push sent:', result);
         } else {
-            console.warn('⚠️ No fcmToken found. Skipping push');
+            console.warn(' No fcmToken found. Skipping push');
         }
 
         // Save Notification to DB
