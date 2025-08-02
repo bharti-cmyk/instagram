@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize-typescript'; // ✅ Use this
@@ -30,15 +30,26 @@ import { Notification } from '../notification/notification.model';
     }),
   ],
 })
-export class DatabaseModule implements OnModuleInit {
+export class DatabaseModule implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly sequelize: Sequelize) {}
 
   async onModuleInit() {
     try {
       await this.sequelize.authenticate();
-      console.log('Database connection has been established successfully.');
+      console.log('✅ Database connection has been established successfully.');
     } catch (error) {
-      console.error('Unable to connect to the database:', error.message);
+      console.error('❌ Unable to connect to the database:', error.message);
+      throw error; // Re-throw to prevent app from starting with DB issues
+    }
+  }
+
+  async onModuleDestroy() {
+    try {
+      console.log('🔄 Closing database connections...');
+      await this.sequelize.close();
+      console.log('✅ Database connections closed successfully.');
+    } catch (error) {
+      console.error('❌ Error closing database connections:', error.message);
     }
   }
 }

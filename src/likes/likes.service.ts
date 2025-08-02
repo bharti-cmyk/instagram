@@ -5,13 +5,20 @@ import { Post } from "../posts/post.model";
 import { NotificationPayload } from "../notification/notification.interface";
 import { User } from "../users/user.model";
 import Redis from "ioredis";
+import { Queue } from "bullmq";
 
 @Injectable()
-export class LikeService{
+export class LikeService {
     private pubsub = new Redis();
+    private notifQueue = new Queue('notifications', {
+        connection: {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(process.env.REDIS_PORT || '6379'),
+        }
+    });
     constructor(
 
-         @InjectModel(Like)
+        @InjectModel(Like)
         private readonly likeModel: typeof Like,
 
         @InjectModel(Post)
@@ -19,10 +26,10 @@ export class LikeService{
 
         @InjectModel(User)
         private readonly userModel: typeof User,
-    ){
+    ) {
     }
 
-    async likePost(PostId: number, UserId: number){
+    async likePost(PostId: string, UserId: number) {
         const like = this.likeModel.findOrCreate({
             where: { UserId, PostId }
         })
@@ -39,24 +46,34 @@ export class LikeService{
         }
 
         const payload: NotificationPayload = {
-                    fromUserId: UserId,
-                    toUserId: post.userId,                         
-                    fcmToken: user.fcmToken,
-                    type: 'like', 
-                    timestamp: new Date().toISOString()
-                }
-        
+            fromUserId: UserId,
+            toUserId: post.userId,
+            fcmToken: user.fcmToken,
+            type: 'like',
+            timestamp: new Date().toISOString()
+        }
+
         await this.pubsub.publish('notification-like', JSON.stringify(payload));
 
+        await this.notifQueue.add('like-event', payload);
+
         return like;
-        
-                //await this.notifQueue.add('like-event', payload);
 
     }
 
-    async unlikePost(PostId: number, UserId: number){
+    async unlikePost(PostId: number, UserId: number) {
         return this.likeModel.destroy({
             where: { UserId, PostId }
         })
     }
+
+    async getLikesByPostId(PostId: string) {
+        return this.likeModel.findAll({
+            where: { PostId },
+            include: [{
+                model: User, attributes: ['id', 'username', 'avatarUrl']
+            }]
+        });
+    }
+
 }

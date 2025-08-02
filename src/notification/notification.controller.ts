@@ -1,12 +1,8 @@
 import { Controller, Get, Req, UseGuards } from "@nestjs/common";
 import { Request } from 'express';
 import { NotificationService } from "./notification.service";
-import { AuthGuard } from "src/auth/auth.guard";
-
-// Define RequestWithUser interface if not already defined elsewhere
-interface RequestWithUser extends Request {
-    user: { id: string };
-}
+import { AuthGuard } from "../auth/auth.guard";
+import { RequestWithUser } from '../types/requestWithUser';
 
 @Controller('notification')
 export class NotificationController {

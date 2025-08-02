@@ -13,6 +13,7 @@ import { RedisModule } from './redis.module';
 import { NotificationModule } from './notification/notification.module';
 import { CommentsModule } from './comments/comments.module';
 import { LikesModule } from './likes/likes.module';
+import { LifecycleModule } from './utils/lifecycle.module';
 
 @Module({
   imports: [
@@ -34,7 +35,8 @@ import { LikesModule } from './likes/likes.module';
     RedisModule,
     NotificationModule,
     CommentsModule,
-    LikesModule
+    LikesModule,
+    LifecycleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

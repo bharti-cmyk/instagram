@@ -4,4 +4,6 @@ export interface NotificationPayload {
   fcmToken: string | null;
   type: 'follow'| 'like' | 'comment';
   timestamp: string;
+  postId?: string; // Optional, only for comment notifications
+  text?: string; // Optional, only for comment notifications
 }

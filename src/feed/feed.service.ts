@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import Redis from 'ioredis';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from '../posts/post.model';
 import { User } from '../users/user.model';
 import { Follow } from '../follows/follow.model';
 import { Op } from 'sequelize';
-
-const redis = new Redis();
+import { Like } from '../likes/like.model';
+import { Comment } from '../comments/comment.model';
 
 @Injectable()
 export class FeedService {
   constructor(
+    @Inject('REDIS_CLIENT') private readonly redis: Redis,
     @InjectModel(Post)
     private readonly postModel: typeof Post,
 
@@ -19,7 +20,13 @@ export class FeedService {
 
     @InjectModel(Follow)
     private readonly followModel: typeof Follow,
-  ) {}
+
+    @InjectModel(Like)
+    private readonly likeModel: typeof Like,
+
+    @InjectModel(Comment)
+    private readonly commentModel: typeof Comment,
+  ) { }
 
   async getUserFeed(
     userId: number,
@@ -33,7 +40,7 @@ export class FeedService {
       ? await this.fetchZSetAfter(userId, after)
       : await this.fetchZSetCursor(userId, cursor, limit);
 
-    const fanoutPosts = await this.fetchPostsByIds(fanoutPostIds);
+    const fanoutPosts = await this.fetchPostsByIds(userId, fanoutPostIds);
     const celebPosts = await this.getCelebPosts(
       celebIds,
       cursor || after,
@@ -79,7 +86,7 @@ export class FeedService {
     cursor?: string,
     limit = 10,
   ): Promise<string[]> {
-    return await redis.zrevrangebyscore(
+    return await this.redis.zrevrangebyscore(
       `feed:${userId}`,
       cursor ? `(${cursor}` : '+inf',
       '-inf',
@@ -93,17 +100,55 @@ export class FeedService {
     userId: number,
     after: string,
   ): Promise<string[]> {
-    return await redis.zrangebyscore(`feed:${userId}`, `(${after}`, '+inf');
+    return await this.redis.zrangebyscore(`feed:${userId}`, `(${after}`, '+inf');
   }
 
-  private async fetchPostsByIds(postIds: string[]): Promise<Post[]> {
+  private async fetchPostsByIds(userId: number, postIds: string[]): Promise<any[]> {
     if (!postIds.length) return [];
 
-    return await this.postModel.findAll({
+    const posts = await this.postModel.findAll({
       where: { id: postIds.map(Number) },
-      include: [{ model: User, attributes: ['id', 'username', 'avatarUrl'] }],
+      include: [
+        {
+          model: this.likeModel,
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'username', 'avatarUrl'],
+            },
+          ],
+        },
+        {
+          model: this.commentModel,
+          attributes: ['id'],
+        },
+        {
+          model: User,
+          attributes: ['id', 'username', 'avatarUrl'],
+        },
+      ],
+      order: [[{ model: this.likeModel, as: 'Likes' }, 'createdAt', 'DESC']],
+    });
+
+    return posts.map((post) => {
+      const plainPost = post.get({ plain: true }) as Post & {
+        Likes?: any[];
+        Comments?: any[];
+      };
+
+      const allLikes = plainPost.Likes || [];
+      const topLikes = allLikes.slice(0, 3).map((like) => like.User);
+
+      return {
+        ...plainPost,
+        likesCount: allLikes.length,
+        topLikes,
+        hasLiked: allLikes.some((like) => like.UserId === userId),
+        commentsCount: plainPost.Comments?.length || 0,
+      };
     });
   }
+
 
   private async getCelebPosts(
     celebIds: number[],

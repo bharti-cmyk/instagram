@@ -10,16 +10,17 @@ export class Like extends Model<Like> {
     declare id: number;
 
     @ForeignKey(() => User)
-    @Column
+    @Column({
+        type: 'BIGINT',
+        allowNull: false,
+    })
     declare UserId: number;
 
     @ForeignKey(() => Post)
-    @Column
-    declare PostId: number;
+    @Column({
+        type: 'BIGINT',
+        allowNull: false,
+    })
+    declare PostId: string;
 
-    @BelongsTo(() => User)
-    user: User;
-
-    @BelongsTo(() => Post)
-    post: Post;
 }

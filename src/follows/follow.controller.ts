@@ -5,10 +5,7 @@ import { AuthGuard } from "../auth/auth.guard";
 import { CreateFollowDto } from "./dto/follow.dto";
 import { FollowedList } from "./dto/followedList.dto";
 import { FollowerList } from "./dto/followersList.dto";
-
-interface RequestWithUser extends Request {
-    user: User & { id: number };
-}
+import { RequestWithUser } from '../types/requestWithUser';
 
 @Controller('follows')
 export class FollowController {

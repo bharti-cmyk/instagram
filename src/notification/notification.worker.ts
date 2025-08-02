@@ -1,7 +1,6 @@
 import { Worker } from 'bullmq';
 import Redis from 'ioredis';
 import * as nodemailer from 'nodemailer';
-import axios from 'axios';
 import * as dotenv from 'dotenv';
 import { PushService } from '../push/push.service';
 import { Notification } from './notification.model';
@@ -16,7 +15,7 @@ const pushService = new PushService()
 
 // Configure nodemailer transporter
 
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,

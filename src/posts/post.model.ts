@@ -8,6 +8,8 @@ import {
   ForeignKey,
 } from 'sequelize-typescript';
 import { User } from '../users/user.model';
+import { Like } from '../likes/like.model';
+import { Comment } from '../comments/comment.model';
 
 @Table({
   tableName: 'posts',
